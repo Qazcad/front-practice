@@ -1,0 +1,71 @@
+<div class="todo-container">
+  <h2>📋 Мои задачи</h2>
+
+  <!-- Форма добавления (без изменений) -->
+  <div class="add-task">
+    <input
+      [(ngModel)]="newTaskTitle"
+      type="text"
+      placeholder="Что нужно сделать?"
+      (keyup.enter)="addTask()"
+      class="task-input"
+    >
+    <button
+      (click)="addTask()"
+      class="add-btn"
+      [disabled]="!newTaskTitle?.trim()"
+    >
+      Добавить
+    </button>
+  </div>
+
+  <!-- Фильтры (обновляем счетчики) -->
+  <div class="filters">
+    <button
+      [class.active]="currentFilter === 'all'"
+      (click)="setFilter('all')"
+    >
+      Все ({{ totalTasks }})
+    </button>
+    <button
+      [class.active]="currentFilter === 'active'"
+      (click)="setFilter('active')"
+    >
+      Активные ({{ remainingTasks }})
+    </button>
+    <button
+      [class.active]="currentFilter === 'completed'"
+      (click)="setFilter('completed')"
+    >
+      Выполненные ({{ totalTasks - remainingTasks }})
+    </button>
+  </div>
+
+  <!-- Список задач (без изменений) -->
+  <div class="todo-list">
+    <app-todo-item
+      *ngFor="let task of filteredTasks"
+      [task]="task"
+      (deleteID)="deleteTask($event)"
+      (completeID)="completeTask($event)"
+    ></app-todo-item>
+
+    <div *ngIf="filteredTasks.length === 0" class="empty-state">
+      ✨ Задач нет
+    </div>
+  </div>
+
+  <!-- Действия (обновляем условие) -->
+  <div class="actions" *ngIf="totalTasks > 0">
+    <span class="remaining">
+      Осталось: {{ remainingTasks }}
+    </span>
+    <button
+      *ngIf="totalTasks > remainingTasks"
+      (click)="clearCompleted()"
+      class="clear-btn"
+    >
+      🗑 Очистить выполненные
+    </button>
+  </div>
+</div>
