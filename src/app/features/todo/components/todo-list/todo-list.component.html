@@ -22,19 +22,19 @@
   <!-- Фильтры (обновляем счетчики) -->
   <div class="filters">
     <button
-      [class.active]="todoService.getCurrentFilter() === 'all'"
+      [class.active]="todoService.currentFilter() === 'all'"
       (click)="setFilter('all')"
     >
       Все ({{ todoService.getTasks().length }})
     </button>
     <button
-      [class.active]="todoService.getCurrentFilter() === 'active'"
+      [class.active]="todoService.currentFilter() === 'active'"
       (click)="setFilter('active')"
     >
       Активные ({{ todoService.remainingCount() }})
     </button>
     <button
-      [class.active]="todoService.getCurrentFilter() === 'completed'"
+      [class.active]="todoService.currentFilter() === 'completed'"
       (click)="setFilter('completed')"
     >
       Выполненные ({{ todoService.getTasks().length - todoService.remainingCount() }})

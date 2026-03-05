@@ -16,10 +16,10 @@ export class TodoService {
     { id: 3, title: 'Выпить кофе', completed: false }
   ]);
 
-  private currentFilter: FilterType = 'all';
+  public currentFilter = signal<FilterType>('all');
 
   filteredTasks = computed(() => {
-    switch (this.currentFilter) {
+    switch (this.currentFilter()) {
       case 'active':
         return this.tasks().filter(task => !task.completed);
       case 'completed':
@@ -40,10 +40,6 @@ export class TodoService {
   // Геттеры для данных
   getTasks(): Task[] {
     return this.tasks();
-  }
-
-  getCurrentFilter(): FilterType {
-    return this.currentFilter;
   }
 
   // Методы для управления задачами
@@ -72,7 +68,7 @@ export class TodoService {
   }
 
   setFilter(filter: FilterType): void {
-    this.currentFilter = filter;
+    this.currentFilter.set(filter);
   }
 
   clearCompleted(): void {
