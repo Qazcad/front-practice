@@ -20,11 +20,11 @@ export class TodoListComponent {
 
   // Данные получаем из сервиса
   get filteredTasks() {
-    return this.todoService.getFilteredTasks();
+    return this.todoService.filteredTasks();
   }
 
   get remainingTasks() {
-    return this.todoService.getRemainingCount();
+    return this.todoService.remainingCount();
   }
 
   get totalTasks() {

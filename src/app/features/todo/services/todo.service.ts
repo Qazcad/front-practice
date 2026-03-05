@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 
 export interface Task {
   id: number;
@@ -10,36 +10,36 @@ export type FilterType = 'all' | 'active' | 'completed';
 
 @Injectable()
 export class TodoService {
-  private tasks: Task[] = [
+  private tasks = signal<Task[]>([
     { id: 1, title: 'Изучить Angular', completed: true },
     { id: 2, title: 'Написать код', completed: false },
     { id: 3, title: 'Выпить кофе', completed: false }
-  ];
+  ]);
 
   private currentFilter: FilterType = 'all';
 
-  // Геттеры для данных
-  getTasks(): Task[] {
-    return this.tasks;
-  }
-
-  getFilteredTasks(): Task[] {
+  filteredTasks = computed(() => {
     switch (this.currentFilter) {
       case 'active':
-        return this.tasks.filter(task => !task.completed);
+        return this.tasks().filter(task => !task.completed);
       case 'completed':
-        return this.tasks.filter(task => task.completed);
+        return this.tasks().filter(task => task.completed);
       default:
-        return this.tasks;
+        return this.tasks();
     }
-  }
+  });
 
-  getRemainingCount(): number {
-    return this.tasks.filter(task => !task.completed).length;
-  }
+  remainingCount = computed(() =>
+    this.tasks().filter(task => !task.completed).length
+  );
 
-  getCompletedCount(): number {
-    return this.tasks.filter(task => task.completed).length;
+  completedCount = computed(() =>
+    this.tasks().filter(task => task.completed).length
+  );
+
+  // Геттеры для данных
+  getTasks(): Task[] {
+    return this.tasks();
   }
 
   getCurrentFilter(): FilterType {
@@ -56,18 +56,19 @@ export class TodoService {
       completed: false
     };
 
-    this.tasks.push(newTask);
+    this.tasks.set([...this.tasks(), newTask]);
   }
 
   deleteTask(id: number): void {
-    this.tasks = this.tasks.filter(task => task.id !== id);
+    this.tasks.set(this.tasks().filter(task => task.id !== id));
   }
 
   completeTask(id: number): void {
-    const task = this.tasks.find(task => task.id === id);
-    if (task) {
-      task.completed = true;
-    }
+    this.tasks.update(tasks =>
+      tasks.map(task =>
+        task.id === id ? { ...task, completed: true } : task
+      )
+    );
   }
 
   setFilter(filter: FilterType): void {
@@ -75,6 +76,6 @@ export class TodoService {
   }
 
   clearCompleted(): void {
-    this.tasks = this.tasks.filter(task => !task.completed);
+    this.tasks.set(this.tasks().filter(task => !task.completed));
   }
 }
