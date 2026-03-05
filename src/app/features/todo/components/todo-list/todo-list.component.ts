@@ -16,24 +16,7 @@ export class TodoListComponent {
   newTaskTitle: string = '';
 
   // Внедряем сервис через конструктор (Dependency Injection!)
-  constructor(private todoService: TodoService) {}
-
-  // Данные получаем из сервиса
-  get filteredTasks() {
-    return this.todoService.filteredTasks();
-  }
-
-  get remainingTasks() {
-    return this.todoService.remainingCount();
-  }
-
-  get totalTasks() {
-    return this.todoService.getTasks().length;
-  }
-
-  get currentFilter() {
-    return this.todoService.getCurrentFilter();
-  }
+  constructor(public todoService: TodoService) {}
 
   addTask() {
     this.todoService.addTask(this.newTaskTitle);
