@@ -1,0 +1,7 @@
+<div class="history">
+  <h1>History {{ historyNumber() }}</h1>
+  <div *ngFor="let element of history()"
+  class="history-element">
+    <p>{{ element.taskTitle }} / {{ element.action }} / {{ element.timestamp.toDateString() }}</p>
+  </div>
+</div>

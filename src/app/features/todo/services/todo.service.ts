@@ -6,6 +6,13 @@ export interface Task {
   completed: boolean;
 }
 
+export interface HistoryEntry {
+  id: number;
+  action: 'add' | 'delete' | 'complete' | 'clear';
+  taskTitle: string | string[];
+  timestamp: Date;
+}
+
 export type FilterType = 'all' | 'active' | 'completed';
 
 @Injectable()
@@ -15,6 +22,16 @@ export class TodoService {
     { id: 2, title: 'Написать код', completed: false },
     { id: 3, title: 'Выпить кофе', completed: false }
   ]);
+
+  private history = signal<HistoryEntry[]>([]);
+
+  // Для чтения истории из компонента
+  readonly historyEntries = this.history.asReadonly();
+
+  readonly recentActivityCount = computed(() => {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    return this.history().filter(entry => entry.timestamp > fiveMinutesAgo).length;
+  });
 
   public currentFilter = signal<FilterType>('all');
 
@@ -37,6 +54,17 @@ export class TodoService {
     this.tasks().filter(task => task.completed).length
   );
 
+  private addHistoryEntry(action: HistoryEntry['action'], taskTitle: string | string[]) {
+    const entry: HistoryEntry = {
+      id: Date.now() + Math.random(), // уникальный id
+      action,
+      taskTitle,
+      timestamp: new Date()
+    };
+
+    this.history.update(entries => [entry, ...entries]); // новые сверху
+  }
+
   // Геттеры для данных
   getTasks(): Task[] {
     return this.tasks();
@@ -53,9 +81,12 @@ export class TodoService {
     };
 
     this.tasks.set([...this.tasks(), newTask]);
+    this.addHistoryEntry('add', newTask.title);
   }
 
   deleteTask(id: number): void {
+    const deletedTask = this.tasks().filter(task => task.id === id).map(task => task.title);
+    this.addHistoryEntry('delete', deletedTask[0]);
     this.tasks.set(this.tasks().filter(task => task.id !== id));
   }
 
@@ -65,6 +96,8 @@ export class TodoService {
         task.id === id ? { ...task, completed: true } : task
       )
     );
+    const completedTask = this.tasks().filter(task => task.id === id).map(task => task.title);
+    this.addHistoryEntry('complete', completedTask[0]);
   }
 
   setFilter(filter: FilterType): void {
@@ -72,6 +105,8 @@ export class TodoService {
   }
 
   clearCompleted(): void {
+    const clearedTasks = this.tasks().filter(task => task.completed).map(task => task.title);
+    this.addHistoryEntry('delete', clearedTasks);
     this.tasks.set(this.tasks().filter(task => !task.completed));
   }
 }

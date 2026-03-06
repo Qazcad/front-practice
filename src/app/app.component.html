@@ -4,12 +4,21 @@
   <div style="display: flex; gap: 20px;">
     <div style="flex: 1;">
       <h2>Список #1</h2>
-      <app-todo-list></app-todo-list>
+      <app-todo-list #list1></app-todo-list>
     </div>
 
     <div style="flex: 1;">
       <h2>Список #2</h2>
-      <app-todo-list></app-todo-list>
+      <app-todo-list #list2></app-todo-list>
+    </div>
+  </div>
+  <div style="display: flex; gap: 20px;">
+    <div style="flex: 1;">
+      <app-todo-history [todoService]="list1.todoService" ></app-todo-history>
+    </div>
+
+    <div style="flex: 1;">
+      <app-todo-history [todoService]="list2.todoService"></app-todo-history>
     </div>
   </div>
 </div>
