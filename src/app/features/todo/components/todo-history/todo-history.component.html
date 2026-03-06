@@ -1,6 +1,6 @@
 <div class="history">
-  <h1>History {{ historyNumber() }}</h1>
-  <div *ngFor="let element of history()"
+  <h1>History {{ todoService.recentActivityCount() }}</h1>
+  <div *ngFor="let element of todoService.historyEntries()"
   class="history-element">
     <p>{{ element.taskTitle }} / {{ element.action }} / {{ element.timestamp.toDateString() }}</p>
   </div>
